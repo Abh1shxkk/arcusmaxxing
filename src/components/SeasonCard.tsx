@@ -9,6 +9,14 @@ import { Card, Stat } from "./ui";
 export function SeasonCard({ weeklyPoints }: { weeklyPoints: number[] }) {
   // Ticks once a minute for the countdown; starts after hydration so server and client agree.
   const [now, setNow] = useState<number | null>(null);
+  const [meta, setMeta] = useState<PointsMeta | null>(null);
+  // Official schedule and season totals from Arcus's public points API (CORS-enabled, cached 30s).
+  useEffect(() => {
+    fetch("https://points-api.arcus.xyz/v1/meta")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m: PointsMeta | null) => m && setMeta(m))
+      .catch(() => {});
+  }, []);
   useEffect(() => {
     const tick = () => setNow(Date.now());
     const first = setTimeout(tick, 0);
@@ -21,13 +29,14 @@ export function SeasonCard({ weeklyPoints }: { weeklyPoints: number[] }) {
 
   const scored = weeklyPoints.filter((p) => p > 0);
   const avg = scored.length ? scored.reduce((s, p) => s + p, 0) / scored.length : null;
-  const next = now ? nextDistribution(now) : null;
+  const officialNext = meta?.next_drop_at ? Date.parse(meta.next_drop_at) : null;
+  const next = officialNext && now && officialNext > now ? officialNext : now ? nextDistribution(now) : null;
   const left = now ? weeksLeft(now) : null;
   const until = next && now ? countdown(next - now) : "…";
 
   return (
     <Card title="Arcus Points · Season 1"
-      subtitle="Points drop every Wednesday at 3PM ET from a fixed weekly pool. Copy yours from the Arcus Points Dashboard into the table below."
+      subtitle="Points drop every Wednesday (19:00 UTC) from a fixed weekly pool. Copy yours from the Arcus Rewards page into the table below."
       action={<a href={POINTS_POST_URL} target="_blank" rel="noopener noreferrer" className="text-[14px] font-medium text-accent hover:underline">Official rules ↗</a>}>
       <div className="grid grid-cols-2 gap-x-6 gap-y-5 lg:grid-cols-4">
         <Stat label="Weekly pool" value={`${num(WEEKLY_POOL)} pts`} hint="Fixed — doesn't grow with users" />
@@ -38,6 +47,14 @@ export function SeasonCard({ weeklyPoints }: { weeklyPoints: number[] }) {
         <Stat label="At this pace" value={avg && left != null ? `${num(Math.round(avg * left))} pts` : "—"}
           hint={left != null ? `More by season end · ${left} weeks left at most` : undefined} />
       </div>
+      {meta && (
+        <p className="mt-5 rounded-[12px] bg-fill-2 px-3.5 py-2.5 text-[13px] text-ink-2">
+          Live from Arcus: <span className="tabular font-medium text-ink">{num(meta.season_addresses)}</span> wallets have earned points
+          in {meta.season.name}, with <span className="tabular font-medium text-ink">{num(meta.season_total_points)}</span> points
+          handed out so far. Each points week runs Wednesday to Wednesday and drops at{" "}
+          {new Date(meta.next_drop_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", timeZoneName: "short" })}.
+        </p>
+      )}
       <div className="mt-6 grid gap-3 border-t border-hairline pt-5 text-[13px] leading-relaxed sm:grid-cols-3">
         <div>
           <p className="font-semibold">Earns points</p>
@@ -60,4 +77,12 @@ function countdown(ms: number) {
   const h = Math.floor(ms / 3_600_000);
   const d = Math.floor(h / 24);
   return d >= 1 ? `${d}d ${h % 24}h` : `${h}h ${Math.floor((ms % 3_600_000) / 60_000)}m`;
+}
+
+interface PointsMeta {
+  season: { name: string; starts_at: string };
+  latest_week: { week_start: string; distributed_at: string } | null;
+  next_drop_at: string;
+  season_addresses: number;
+  season_total_points: number;
 }

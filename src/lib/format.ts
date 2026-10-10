@@ -17,8 +17,9 @@ export const bpsLabel = (b: number) => `${b.toFixed(2)} bps`;
 const dayFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 export const shortDate = (ms: number) => dayFmt.format(ms);
 
+/** A points week, shown as its start date and the Wednesday its points drop. */
 export function weekLabel(startMs: number) {
-  return `${shortDate(startMs)} – ${shortDate(startMs + 6 * 86_400_000)}`;
+  return `${shortDate(startMs)} – ${shortDate(startMs + 7 * 86_400_000)}`;
 }
 
 export const shortAddress = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;

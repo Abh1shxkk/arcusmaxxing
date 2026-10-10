@@ -9,7 +9,7 @@ import {
   type Portfolio,
   type Transfer,
 } from "@/lib/arcus";
-import { bps } from "@/lib/aggregate";
+import { bps, weekStart } from "@/lib/aggregate";
 import { isOffHoursET, POINTS_POST_URL } from "@/lib/season";
 import { bpsLabel, num, pct, shortDate, usd } from "@/lib/format";
 import { AccountBar, AddressSearch, PageHeader } from "../Account";
@@ -80,7 +80,7 @@ export function FarmView() {
 
   const activity = useMemo(() => {
     const days = new Set(fills.map((f) => Math.floor(f.createdAt / 86_400_000_000)));
-    const weeks = new Set(fills.map((f) => Math.floor((f.createdAt / 1000 - 4 * 86_400_000) / (7 * 86_400_000))));
+    const weeks = new Set(fills.map((f) => weekStart(f.createdAt / 1000)));
     const markets = new Set(fills.map((f) => f.market));
     const vol = fills.reduce((s, f) => s + f.notional, 0);
     const maker = fills.reduce((s, f) => s + (f.role === "MAKER" ? f.notional : 0), 0);

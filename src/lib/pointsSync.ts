@@ -1,7 +1,9 @@
+import { POINTS_WEEK_ANCHOR } from "./aggregate";
+
 // Shared by the browser and the /api/points route: what gets signed, and how it's checked.
 
 export interface SyncWeek {
-  start: number; // week start, UTC ms (Monday 00:00)
+  start: number; // points-week start, UTC ms (Wednesday 16:00)
   points: number;
   fees: number; // USD paid that week
   volume: number; // USD traded that week
@@ -26,7 +28,6 @@ export function signMessage(address: string, payloadHash: string, timestamp: num
 }
 
 const WEEK = 7 * 86_400_000;
-const MONDAY_OFFSET = 4 * 86_400_000; // 1970-01-05 was a Monday
 
 /** Returns an error message, or null if the payload is well-formed. */
 export function validatePayload(p: unknown): string | null {
@@ -36,7 +37,7 @@ export function validatePayload(p: unknown): string | null {
   const seen = new Set<number>();
   for (const w of weeks) {
     if (![w.start, w.points, w.fees, w.volume].every((v) => typeof v === "number" && Number.isFinite(v))) return "Non-numeric values";
-    if ((w.start - MONDAY_OFFSET) % WEEK !== 0) return "Week starts must be Monday 00:00 UTC";
+    if ((((w.start - POINTS_WEEK_ANCHOR) % WEEK) + WEEK) % WEEK !== 0) return "Weeks must start on Wednesday 16:00 UTC (the Arcus points week)";
     if (seen.has(w.start)) return "Duplicate week";
     seen.add(w.start);
     if (w.points < 0 || w.points > 1e9) return "Points out of range";

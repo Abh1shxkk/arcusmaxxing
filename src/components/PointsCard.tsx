@@ -146,7 +146,7 @@ export function PointsCard({
       )}
       {rows.length > 0 && <Pagination {...paged} noun="weeks" />}
       <p className="mt-4 text-[12px] text-ink-3">
-        Arcus shows your points on its Points Dashboard but has no public points API, so copy each Wednesday drop into the trading week it rewards. Saved in this browser — or sync it below.
+        Weeks match Arcus points weeks: Wednesday to Wednesday, labelled by drop date. Copy each drop from the Rewards page in the Arcus app into its row. Saved in this browser — or sync it below.
       </p>
     </Card>
   );

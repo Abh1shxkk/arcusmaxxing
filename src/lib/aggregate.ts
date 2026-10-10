@@ -19,11 +19,15 @@ export function dayStart(ms: number) {
   return Math.floor(ms / DAY_MS) * DAY_MS;
 }
 
-// Weeks run Monday 00:00 UTC → Sunday 23:59 UTC.
+const WEEK_MS = 7 * DAY_MS;
+/**
+ * Weeks follow the Arcus points week: Wednesday 16:00 UTC to the next Wednesday 16:00 UTC, anchored
+ * on the Season 1 start (points-api.arcus.xyz/v1/meta). Each week's points drop that Wednesday at 19:00 UTC.
+ */
+export const POINTS_WEEK_ANCHOR = Date.UTC(2026, 8, 30, 16);
+
 export function weekStart(ms: number) {
-  const d = dayStart(ms);
-  const dow = (new Date(d).getUTCDay() + 6) % 7; // 0 = Monday
-  return d - dow * DAY_MS;
+  return POINTS_WEEK_ANCHOR + Math.floor((ms - POINTS_WEEK_ANCHOR) / WEEK_MS) * WEEK_MS;
 }
 
 /** A week only partly covered by the loaded data: the current week, or one cut off by the range start. */
@@ -45,7 +49,7 @@ const emptyBucket =(start: number): Bucket => ({
 /** Groups fills into contiguous day/week buckets (oldest first), including empty periods. */
 export function bucketize(fills: Fill[], period: Period, rangeStartMs: number, nowMs: number): Bucket[] {
   const startOf = period === "day" ? dayStart : weekStart;
-  const step = period === "day" ? DAY_MS : 7 * DAY_MS;
+  const step = period === "day" ? DAY_MS : WEEK_MS;
   const map = new Map<number, Bucket>();
   for (let t = startOf(rangeStartMs); t <= nowMs; t += step) map.set(t, emptyBucket(t));
 

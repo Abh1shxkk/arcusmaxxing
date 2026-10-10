@@ -44,7 +44,7 @@ export function Footer() {
         </div>
       </div>
       <p className="mt-6 text-center text-[12px] leading-relaxed text-ink-3">
-        Data from the public Arcus mainnet API. Days and weeks are in UTC; weeks start Monday.
+        Data from the public Arcus mainnet API. Days are UTC; weeks are Arcus points weeks (Wednesday to Wednesday, 16:00 UTC).
         <br />
         ArcusMaxxing is an unofficial community tool — not affiliated with or endorsed by Arcus.
       </p>

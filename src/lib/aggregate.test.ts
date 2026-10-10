@@ -11,11 +11,14 @@ function fill(ms: number, notional: number, fee: number, role: "MAKER" | "TAKER"
 }
 
 describe("weekStart", () => {
-  it("snaps any day of the week back to Monday 00:00 UTC", () => {
-    expect(weekStart(MON)).toBe(MON);
-    expect(weekStart(MON + 3 * DAY + 5_000)).toBe(MON);
-    expect(weekStart(MON + 6 * DAY + DAY - 1)).toBe(MON); // Sunday 23:59:59.999
-    expect(weekStart(MON + 7 * DAY)).toBe(MON + 7 * DAY);
+  // Arcus points weeks: Wednesday 16:00 UTC → Wednesday 16:00 UTC, matching points-api.arcus.xyz/v1/meta.
+  const S1 = Date.UTC(2026, 8, 30, 16); // Season 1 start, Wed Sep 30
+  it("snaps to the Wednesday 16:00 UTC that starts the points week", () => {
+    expect(weekStart(S1)).toBe(S1);
+    expect(weekStart(MON)).toBe(S1); // Monday Oct 5 is inside the Sep 30 → Oct 7 week
+    expect(weekStart(Date.UTC(2026, 9, 7, 15, 59))).toBe(S1); // just before the Oct 7 cut-off
+    expect(weekStart(Date.UTC(2026, 9, 7, 16))).toBe(S1 + 7 * DAY); // the next week starts
+    expect(weekStart(Date.UTC(2026, 8, 29))).toBe(S1 - 7 * DAY); // works before the anchor too
   });
 });
 
@@ -42,9 +45,10 @@ describe("bucketize", () => {
 
 describe("isPartialWeek", () => {
   it("flags the current week and a week cut off by the range start", () => {
-    expect(isPartialWeek(MON, MON, MON + 2 * DAY)).toBe(true); // current week
-    expect(isPartialWeek(MON - 7 * DAY, MON - 5 * DAY, MON + 2 * DAY)).toBe(true); // range began mid-week
-    expect(isPartialWeek(MON - 7 * DAY, MON - 7 * DAY, MON + 2 * DAY)).toBe(false);
+    const W = weekStart(MON);
+    expect(isPartialWeek(W, W, MON)).toBe(true); // current week
+    expect(isPartialWeek(W - 7 * DAY, W - 5 * DAY, MON)).toBe(true); // range began mid-week
+    expect(isPartialWeek(W - 7 * DAY, W - 7 * DAY, MON)).toBe(false);
   });
 });
 

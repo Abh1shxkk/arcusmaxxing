@@ -6,6 +6,7 @@ import { buildModel, feesFor, tierForWeeklyVolume } from "./pointsModel";
 import { liquidationPrice } from "./liquidation";
 import { buildProfile } from "./traderProfile";
 import { toCsv } from "./csv";
+import { migratePoints } from "./points";
 import { median, quantile, sha256Hex, signMessage, validatePayload } from "./pointsSync";
 
 const WEEK = 7 * 86_400_000;
@@ -93,11 +94,12 @@ describe("csv", () => {
 });
 
 describe("points sync", () => {
-  const good = { weeks: [{ start: MON, points: 100, fees: 12.5, volume: 50_000 }] };
+  const WED = Date.UTC(2026, 8, 30, 16); // an Arcus points-week start
+  const good = { weeks: [{ start: WED, points: 100, fees: 12.5, volume: 50_000 }] };
 
   it("accepts a well-formed payload and rejects bad ones", () => {
     expect(validatePayload(good)).toBeNull();
-    expect(validatePayload({ weeks: [{ ...good.weeks[0], start: MON + 3600_000 }] })).toMatch(/Monday/);
+    expect(validatePayload({ weeks: [{ ...good.weeks[0], start: MON }] })).toMatch(/Wednesday/); // old Monday weeks are rejected
     expect(validatePayload({ weeks: [{ ...good.weeks[0], points: -1 }] })).toMatch(/Points/);
     expect(validatePayload({ weeks: [good.weeks[0], good.weeks[0]] })).toMatch(/Duplicate/);
     expect(validatePayload("nope")).toMatch(/Malformed/);
@@ -120,5 +122,15 @@ describe("points sync", () => {
     expect(median([5, 1, 3])).toBe(3);
     expect(median([1, 2, 3, 100])).toBe(2.5);
     expect(quantile([1, 2, 3, 4, 5], 0.25)).toBe(2);
+  });
+});
+
+describe("saved points migration", () => {
+  it("moves Monday-keyed weeks into the Arcus points week they fall in", () => {
+    const WED = Date.UTC(2026, 8, 30, 16);
+    const { points, changed } = migratePoints({ [MON]: 120, [WED + 7 * 86_400_000]: 80 });
+    expect(changed).toBe(true);
+    expect(points).toEqual({ [WED]: 120, [WED + 7 * 86_400_000]: 80 });
+    expect(migratePoints(points).changed).toBe(false); // already migrated
   });
 });
