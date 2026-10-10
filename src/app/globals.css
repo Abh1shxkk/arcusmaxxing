@@ -1,26 +1,198 @@
 @import "tailwindcss";
 
+/* Arcus-inspired palette: forest green with a gold highlight — sage-tinted light mode, deep green dark mode.
+   Theme follows the system unless the navbar toggle sets data-theme on <html>. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #edf3ec;
+  --card: #fbfdf9;
+  --card-2: #f3f8f1;
+  --fill: rgba(30, 59, 37, 0.09);
+  --fill-2: rgba(30, 59, 37, 0.055);
+  --text: #101a12;
+  --text-2: #5b6a5e;
+  --text-3: #85928a;
+  --hairline: rgba(30, 59, 37, 0.1);
+  --accent: #1e3b25;
+  --on-accent: #f5f2eb;
+  --accent-soft: rgba(30, 59, 37, 0.09);
+  --gold: #c9a34a;
+  --green: #2f8a4c;
+  --orange: #c2570c;
+  --purple: #7a4fb0;
+  --red: #c4372b;
+  --nav: rgba(251, 253, 249, 0.94);
+  /* Chart series — validated with the dataviz palette checker against the card surface. */
+  --chart-1: #2f855a;
+  --chart-2: #c2410c;
+  --chart-down: #c53030;
+  --shadow: 0 1px 2px rgba(16, 40, 22, 0.04), 0 8px 28px rgba(16, 40, 22, 0.07);
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --bg: #0f140d;
+    --card: #171d15;
+    --card-2: #1d241a;
+    --fill: rgba(232, 221, 190, 0.14);
+    --fill-2: rgba(232, 221, 190, 0.08);
+    --text: #f5f2eb;
+    --text-2: #b3ae9f;
+    --text-3: #8a8679;
+    --hairline: rgba(245, 242, 235, 0.1);
+    --accent: #a9d6a0;
+    --on-accent: #0f140d;
+    --accent-soft: rgba(169, 214, 160, 0.14);
+    --gold: #d9bb6a;
+    --green: #7fd18b;
+    --orange: #f0a35e;
+    --purple: #c9a7ef;
+    --red: #ff7b6b;
+    --nav: rgba(23, 29, 21, 0.94);
+    --chart-1: #34a26a;
+    --chart-2: #e06c1f;
+    --chart-down: #e5534b;
+    --shadow: 0 0 0 1px rgba(245, 242, 235, 0.06);
+    color-scheme: dark;
   }
 }
 
+:root[data-theme="dark"] {
+  --bg: #0f140d;
+  --card: #171d15;
+  --card-2: #1d241a;
+  --fill: rgba(232, 221, 190, 0.14);
+  --fill-2: rgba(232, 221, 190, 0.08);
+  --text: #f5f2eb;
+  --text-2: #b3ae9f;
+  --text-3: #8a8679;
+  --hairline: rgba(245, 242, 235, 0.1);
+  --accent: #a9d6a0;
+  --on-accent: #0f140d;
+  --accent-soft: rgba(169, 214, 160, 0.14);
+  --gold: #d9bb6a;
+  --green: #7fd18b;
+  --orange: #f0a35e;
+  --purple: #c9a7ef;
+  --red: #ff7b6b;
+  --nav: rgba(23, 29, 21, 0.94);
+  --chart-1: #34a26a;
+  --chart-2: #e06c1f;
+  --chart-down: #e5534b;
+  --shadow: 0 0 0 1px rgba(245, 242, 235, 0.06);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-fill: var(--fill);
+  --color-fill-2: var(--fill-2);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-ink-3: var(--text-3);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-gold: var(--gold);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-down: var(--chart-down);
+  --color-green: var(--green);
+  --color-orange: var(--orange);
+  --color-purple: var(--purple);
+  --color-red: var(--red);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-inter), system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.glass {
+  background: var(--nav);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--fill-2) 25%, var(--fill) 50%, var(--fill-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 8px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.select-pop {
+  transform-origin: var(--radix-select-content-transform-origin);
+  animation: pop 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .select-pop,
+  .rise,
+  .skeleton {
+    animation: none;
+  }
 }
