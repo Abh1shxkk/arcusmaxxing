@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { kvConfigured } from "@/lib/kv";
 import { collect } from "@/lib/activity";
 
-// Runs the active-trader collector. Called every 10 minutes by .github/workflows/collect-activity.yml
+// Runs the active-trader collector. Called every 5 minutes by .github/workflows/collect-activity.yml
 // with `Authorization: Bearer $CRON_SECRET`.
 export const maxDuration = 60;
 

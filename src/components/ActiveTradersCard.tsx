@@ -43,7 +43,7 @@ export function ActiveTradersCard({ onSelect }: { onSelect: (address: string) =>
 
   return (
     <Card title="Active traders"
-      subtitle="Exact count of unique wallets that made or took at least one trade on Arcus. Days are UTC; updated every 10 minutes.">
+      subtitle="Exact count of unique wallets that made or took at least one trade on Arcus. Days are UTC; updated every 5 minutes.">
       <div className="grid grid-cols-2 gap-x-6 gap-y-5 lg:grid-cols-4">
         <Stat label="Today so far" tone="accent" value={num(data.today)} hint={hint(todayStart) ?? "Since 00:00 UTC"} />
         <Stat label="Yesterday" value={num(data.yesterday)} hint={hint(todayStart - DAY) ?? "Full UTC day"} />

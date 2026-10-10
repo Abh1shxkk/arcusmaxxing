@@ -1,11 +1,11 @@
-# Feeds the "Active traders" stats: every 10 minutes, ask the site to read new Arcus trades
+# Feeds the "Active traders" stats: every 5 minutes, ask the site to read new Arcus trades
 # (and backfill older ones) into the database. GitHub may delay scheduled runs a little; the
 # collector picks up from where it left off, so nothing is missed.
 name: Collect Arcus activity
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 concurrency:

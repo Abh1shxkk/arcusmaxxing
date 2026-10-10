@@ -76,7 +76,7 @@ async function mapLimit<T>(items: T[], limit: number, fn: (item: T) => Promise<v
   }));
 }
 
-export async function collect({ budgetMs = 45_000 } = {}) {
+export async function collect({ budgetMs = 50_000 } = {}) {
   const budget = new Budget(Date.now() + budgetMs);
   const [locked] = await kvPipeline([["SET", "act:lock", "1", "NX", "EX", 120]]);
   if (locked !== "OK") return { skipped: "another run is in progress" };
