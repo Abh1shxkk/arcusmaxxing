@@ -40,7 +40,7 @@ export function NavFrame({ pathname }: { pathname: string | null }) {
       <nav className="glass mx-auto flex h-14 max-w-[1180px] items-center justify-between rounded-full border border-hairline pr-2 pl-3 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
         <Link href="/" className="flex items-center gap-2.5">
           <Logo />
-          <span className="text-[15px] font-semibold tracking-tight lg:hidden xl:inline">Arcus Fee Tracker</span>
+          <span className="text-[16px] font-bold tracking-tight lg:hidden xl:inline">Arcus<span className="text-accent">Maxxing</span></span>
         </Link>
         <div className="hidden items-center gap-0.5 lg:flex">{links}</div>
         <div className="flex items-center gap-1.5">

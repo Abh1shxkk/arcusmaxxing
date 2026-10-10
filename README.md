@@ -1,11 +1,13 @@
-# Arcus Fee Tracker
+# ArcusMaxxing
 
-Track what trading on [Arcus](https://arcus.xyz) mainnet really costs you — volume, fees, funding and profit,
+**Live: [arcusmaxxing.vercel.app](https://arcusmaxxing.vercel.app)**
+
+Max out your [Arcus](https://arcus.xyz) farm. Track what trading on Arcus mainnet really costs you — volume, fees, funding and profit,
 day by day and week by week — and whether farming points is worth it.
 
 Built by [Abhishek Chauhan](https://portfolio-frontend-sigma-jade.vercel.app/) ·
 [X](https://x.com/abh1shxkk) · [LinkedIn](https://www.linkedin.com/in/abhishek-chauhan-880496394) ·
-[GitHub](https://github.com/abh1shxkk). Not affiliated with Arcus.
+[GitHub](https://github.com/abh1shxkk). Unofficial — not affiliated with or endorsed by Arcus.
 
 ## What's inside
 
@@ -47,7 +49,7 @@ Requires Node.js 20+.
 Without step 3 everything works except syncing points across devices; points stay in each browser and the
 Points page says sync isn't set up.
 
-Share links look like `https://your-domain/u/0x…` and render a preview image of that wallet's trader card on X,
+Share links look like `https://arcusmaxxing.vercel.app/u/0x…` and render a preview image of that wallet's trader card on X,
 Telegram, Discord and anywhere else that reads Open Graph tags.
 
 ## Environment variables

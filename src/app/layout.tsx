@@ -15,8 +15,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Arcus Fee Tracker",
-  description: "Track your Arcus mainnet trading volume, fees and cost per point — day by day and week by week.",
+  title: "ArcusMaxxing",
+  description: "Max out your Arcus farm. Fees, volume, funding, profit and cost per point for any wallet — plus your degen trader card.",
 };
 
 export const viewport: Viewport = {

@@ -66,7 +66,7 @@ export const TraderCard = forwardRef<HTMLDivElement, { profile: TraderProfile; s
             <circle cx="7.5" cy="16.5" r="2.5" fill={GOLD} />
           </svg>
           <p className="font-[family-name:var(--font-marker)] text-[1.5em] leading-none tracking-[0.06em]">
-            ARCUS <span style={{ color: GOLD }}>{"//"}</span> HALL OF DEGENS
+            ARCUS<span style={{ color: GOLD }}>MAXXING</span> <span style={{ color: GOLD }}>{"//"}</span> HALL OF DEGENS
           </p>
         </div>
 
@@ -124,7 +124,7 @@ export const TraderCard = forwardRef<HTMLDivElement, { profile: TraderProfile; s
           )}
           {profile.traits.map((t, i) => <Sticker key={t.name} i={i} text={`${t.emoji} ${t.name}`} />)}
           <p className="w-full pt-[0.4em] text-right font-[family-name:var(--font-marker)] text-[1.15em]" style={{ color: CREAM }}>
-            gm from {who} <span style={{ color: GOLD }}>✦</span>
+            gm from {who} <span style={{ color: GOLD }}>✦</span> <span className="opacity-70">arcusmaxxing.vercel.app</span>
           </p>
         </div>
         </div>

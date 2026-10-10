@@ -16,7 +16,7 @@ export const MIN_CONTRIBUTORS = 3; // a week's community figure is hidden until 
 
 export function signMessage(address: string, payloadHash: string, timestamp: number) {
   return [
-    "Arcus Fee Tracker",
+    "ArcusMaxxing",
     "Save my weekly points.",
     "",
     `Wallet: ${address.toLowerCase()}`,

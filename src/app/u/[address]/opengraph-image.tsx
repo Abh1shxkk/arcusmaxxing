@@ -52,7 +52,7 @@ export default async function Image({ params }: { params: Promise<{ address: str
         </svg>
 
         <div style={{ position: "absolute", top: 36, left: 48, display: "flex", fontSize: 26, letterSpacing: 2 }}>
-          ARCUS <span style={{ color: GOLD, margin: "0 10px" }}>{"//"}</span> HALL OF DEGENS
+          ARCUS<span style={{ color: GOLD }}>MAXXING</span><span style={{ color: GOLD, margin: "0 10px" }}>{"//"}</span> HALL OF DEGENS
         </div>
 
         <div style={{ position: "absolute", top: 28, right: 48, display: "flex", flexDirection: "column", alignItems: "center",
@@ -97,7 +97,7 @@ export default async function Image({ params }: { params: Promise<{ address: str
           ))}
         </div>
         <div style={{ position: "absolute", right: 48, bottom: 34, display: "flex", fontSize: 22 }}>
-          gm from {valid ? shortAddress(address) : "Arcus"}
+          gm from {valid ? shortAddress(address) : "Arcus"} · arcusmaxxing.vercel.app
         </div>
       </div>
     ),

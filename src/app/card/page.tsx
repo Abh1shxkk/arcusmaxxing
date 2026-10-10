@@ -7,7 +7,7 @@ const tag = Sedgwick_Ave_Display({ weight: "400", subsets: ["latin"], variable: 
 const marker = Permanent_Marker({ weight: "400", subsets: ["latin"], variable: "--font-marker" });
 
 export const metadata: Metadata = {
-  title: "Trader card · Arcus Fee Tracker",
+  title: "Trader card · ArcusMaxxing",
   description: "Find out what kind of Arcus trader you are — and post your card.",
 };
 

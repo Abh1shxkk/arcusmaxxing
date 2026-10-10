@@ -69,7 +69,7 @@ export function AlertsWatcher() {
       for (const a of diff(prev, next, tiers).filter((a) => prefs[a.kind])) {
         setToasts((t) => [...t, { id: Date.now() + Math.random(), text: a.text }]);
         if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-          new Notification("Arcus Fee Tracker", { body: a.text, icon: "/icon.svg" });
+          new Notification("ArcusMaxxing", { body: a.text, icon: "/icon.svg" });
         }
       }
     };

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CompareView } from "@/components/views/CompareView";
 
 export const metadata: Metadata = {
-  title: "Compare wallets · Arcus Fee Tracker",
+  title: "Compare wallets · ArcusMaxxing",
   description: "Compare Arcus wallets side by side: fee rate, maker share, cost per $1M and rank.",
 };
 
