@@ -61,6 +61,23 @@ export function classify(raw: string): { url: string; kind: AlphaKind } | { erro
 /** Starter picks, always shown and featured. */
 export const SEED_ITEMS: AlphaItem[] = [
   {
+    id: "seed-rajsh7894-delta-neutral",
+    url: "https://x.com/rajsh7894/status/2103088426824462677",
+    kind: "x",
+    title: "Post by Raj.ETH",
+    author: "Raj.ETH",
+    authorUrl: "https://x.com/rajsh7894",
+    text: "Ultimate Guide to Hedging & Farming Perp DEX Points With Minimal Fees!!\n\nSo, as you guys know, this guide is about hedging and farming Perp DEX points using a Delta-Neutral strategy. Before getting into the main strategy, let's quickly understand what Delta Neutral means…",
+    thumbnail: null,
+    postedAt: "September 24, 2026",
+    note: "Delta-neutral guide: farm perp points with little price risk and low fees. On Arcus, hedge on another venue — not between your own Arcus accounts, which counts as self-matching.",
+    tag: "Strategy",
+    sharedBy: "ArcusMaxxing",
+    createdAt: Date.UTC(2026, 8, 24, 12),
+    status: "approved",
+    featured: true,
+  },
+  {
     id: "seed-earnbyabhi-limit-orders",
     url: "https://x.com/EarnByAbhi/status/2107153014155076002",
     kind: "x",
