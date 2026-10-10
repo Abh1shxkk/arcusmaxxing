@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import type { AlphaItem } from "@/lib/alpha";
+import { SEED_ITEMS, type AlphaItem } from "@/lib/alpha";
 import { PageHeader } from "@/components/Account";
 import { Card } from "@/components/ui";
 
@@ -83,8 +83,16 @@ export function AlphaAdmin() {
               </ul>
             )}
           </Card>
-          <Card title={`Live · ${data.approved.length}`} subtitle="The two starter posts are built in and always shown.">
-            {data.approved.length === 0 ? <p className="text-[14px] text-ink-3">Nothing approved yet.</p> : (
+          <Card title={`Live · ${data.approved.length + SEED_ITEMS.length}`}
+            subtitle="Everything on the public Alpha page. Starter picks are built into the code — ask to change them.">
+            <ul className="mb-3 space-y-3">
+              {SEED_ITEMS.map((i) => (
+                <Row key={i.id} item={i} busy={false}>
+                  <span className="rounded-full bg-fill px-3 py-1.5 text-[12px] font-medium text-ink-2">Built in · Featured</span>
+                </Row>
+              ))}
+            </ul>
+            {data.approved.length === 0 ? <p className="text-[14px] text-ink-3">No community links approved yet.</p> : (
               <ul className="space-y-3">
                 {data.approved.map((i) => (
                   <Row key={i.id} item={i} busy={busy === i.id}>
