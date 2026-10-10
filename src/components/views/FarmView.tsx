@@ -10,6 +10,7 @@ import {
   type Transfer,
 } from "@/lib/arcus";
 import { bps } from "@/lib/aggregate";
+import { isOffHoursET, POINTS_POST_URL } from "@/lib/season";
 import { bpsLabel, num, pct, shortDate, usd } from "@/lib/format";
 import { AccountBar, AddressSearch, PageHeader } from "../Account";
 import { ExportCard } from "../ExportCard";
@@ -29,7 +30,7 @@ interface Extras {
 type Status = "good" | "ok" | "todo";
 
 export function FarmView() {
-  const { address, addresses, combined, walletStats, stats, tiers, fillState, range, changeRange, now, funding: rangeFunding, account, subaccounts } = useTracker();
+  const { address, addresses, combined, walletStats, stats, tiers, markets: marketList, fillState, range, changeRange, now, funding: rangeFunding, account, subaccounts } = useTracker();
   // (wallet, subaccount) pairs in view: each wallet's main account when combined.
   const parts = combined
     ? addresses.map((a) => `${a}:0`)
@@ -83,8 +84,16 @@ export function FarmView() {
     const markets = new Set(fills.map((f) => f.market));
     const vol = fills.reduce((s, f) => s + f.notional, 0);
     const maker = fills.reduce((s, f) => s + (f.role === "MAKER" ? f.notional : 0), 0);
-    return { days: days.size, weeks: weeks.size, markets: markets.size, makerShare: vol > 0 ? maker / vol : 0 };
-  }, [fills]);
+    // Season 1 boosts real-world assets (anything that isn't crypto), more so outside US hours.
+    const category = new Map(marketList?.map((m) => [m.name, m.category]) ?? []);
+    const rwa = fills.filter((f) => category.has(f.market) && category.get(f.market) !== "CRYPTO");
+    const rwaVol = rwa.reduce((s, f) => s + f.notional, 0);
+    const offHoursRwa = rwa.reduce((s, f) => s + (isOffHoursET(f.createdAt / 1000) ? f.notional : 0), 0);
+    return {
+      days: days.size, weeks: weeks.size, markets: markets.size, makerShare: vol > 0 ? maker / vol : 0,
+      rwaShare: vol > 0 ? rwaVol / vol : 0, offHoursRwaShare: rwaVol > 0 ? offHoursRwa / rwaVol : 0, rwaVol,
+    };
+  }, [fills, marketList]);
 
   const fundingByMarket = useMemo(() => {
     const m = new Map<string, { market: string; net: number; paid: number; received: number; count: number }>();
@@ -130,6 +139,12 @@ export function FarmView() {
   const deposits = transfers.filter((t) => t.type === "DEPOSIT" && t.status === "APPLIED").reduce((s, t) => s + t.amount, 0);
   const withdrawals = transfers.filter((t) => t.type === "WITHDRAWAL" && t.status === "APPLIED").reduce((s, t) => s + t.amount, 0);
   const turnover = deposits > 0 ? lifetime / deposits : null;
+  const netDeposits = deposits - withdrawals;
+  const retained = data?.portfolio && netDeposits > 0 ? Math.min(1.5, data.portfolio.equity / netDeposits) : null;
+  // Churn: a withdrawal within three days of a deposit (deposit → trade → withdraw), last 90 days.
+  const recent = transfers.filter((t) => t.status === "APPLIED" && t.createdAt / 1000 >= now - 90 * 86_400_000);
+  const churnCycles = recent.filter((w) => w.type === "WITHDRAWAL" &&
+    recent.some((d) => d.type === "DEPOSIT" && d.createdAt < w.createdAt && w.createdAt - d.createdAt <= 3 * 86_400_000_000)).length;
   const fundingNet = (funding30 ?? []).reduce((s, p) => s + p.payment, 0);
   const fees30 = stats?.rollingFeesPaid ?? 0;
   const cost30 = fees30 - fundingNet; // funding received offsets cost
@@ -188,6 +203,38 @@ export function FarmView() {
         ? `30d: #${data.ranks.vol30 ?? "—"} volume, #${data.ranks.fees30 ?? "—"} fees · All time: #${data.ranks.volAll ?? "—"} volume, #${data.ranks.feesAll ?? "—"} fees.`
         : "Loading ranks…",
       why: "Leaderboards are public, so they're an easy snapshot for any future rewards.",
+    },
+    {
+      title: "Real-world assets",
+      status: activity.rwaShare >= 0.3 ? "good" : activity.rwaShare >= 0.1 ? "ok" : "todo",
+      value: `${Math.round(activity.rwaShare * 100)}% of volume`,
+      progress: Math.min(1, activity.rwaShare / 0.3),
+      detail: "Stocks, ETFs, commodities and indices — perps or Stock Tokens.",
+      why: "Season 1 boost: trading Stock Tokens and other real-world assets currently earns more points.",
+    },
+    {
+      title: "Off-hours RWA",
+      status: activity.rwaVol === 0 ? "todo" : activity.offHoursRwaShare >= 0.3 ? "good" : activity.offHoursRwaShare >= 0.1 ? "ok" : "todo",
+      value: activity.rwaVol === 0 ? "No RWA trades" : `${Math.round(activity.offHoursRwaShare * 100)}% of RWA`,
+      progress: Math.min(1, activity.offHoursRwaShare / 0.3),
+      detail: "Between 8PM and 4AM ET, or on weekends.",
+      why: "Season 1 boost: RWA perps traded outside US market hours earn more again.",
+    },
+    {
+      title: "Retained deposits",
+      status: retained == null ? "ok" : retained >= 0.8 ? "good" : retained >= 0.5 ? "ok" : "todo",
+      value: retained == null ? "—" : `${Math.round(retained * 100)}% kept`,
+      progress: retained ?? 0,
+      detail: data ? `${usd(data.portfolio?.equity ?? 0, { compact: true })} on Arcus of ${usd(Math.max(0, netDeposits), { compact: true })} deposited (net).` : "Loading…",
+      why: "Season 1 rewards holding your collateral on Arcus, not just trading it.",
+    },
+    {
+      title: "No churning",
+      status: churnCycles === 0 ? "good" : churnCycles === 1 ? "ok" : "todo",
+      value: churnCycles === 0 ? "Clean" : `${churnCycles} quick withdrawal${churnCycles > 1 ? "s" : ""}`,
+      progress: churnCycles === 0 ? 1 : Math.max(0.05, 1 - churnCycles / 4),
+      detail: "Withdrawals within 3 days of a deposit, last 90 days.",
+      why: "Arcus cuts points for rapid deposit → trade → withdraw cycles, wash trading and self-matching.",
     },
   ];
 
@@ -359,24 +406,25 @@ function Table({ head, children }: { head: string[]; children: ReactNode }) {
 function Header() {
   return (
     <PageHeader eyebrow="Airdrop farming" title="Farm Arcus like you mean it.">
-      Track the things that tend to matter for rewards — volume, consistency, breadth and cost — using public Arcus data.
-      Arcus hasn&apos;t published any airdrop criteria, so treat this as a guide, not a guarantee.
+      Arcus Points Season 1 rewards how you trade, making markets, keeping deposits on Arcus and referrals — with boosts for
+      real-world assets and off-hours trading. This checks your wallet against those rules using public data.{" "}
+      <a href={POINTS_POST_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">Official rules ↗</a>
     </PageHeader>
   );
 }
 
 function Tips() {
   const tips: [string, ReactNode][] = [
-    ["Trade every week", "Spread volume across many weeks instead of one big burst. Consistency is the hardest signal to fake."],
-    ["Use limit orders", "Maker orders cost less, and at the VIP tier and above Arcus pays you a rebate to make."],
-    ["Climb fee tiers", <>Tiers reset on rolling 30-day volume. Check your path on the <Link href="/fees" className="font-medium text-accent hover:underline">Fees page</Link>.</>],
-    ["Collect invite codes", "Every $1M of lifetime perps volume earns an invite code. Referred traders also earn you commission."],
-    ["Try the whole product", "Trade crypto, stocks, ETFs and commodities perps — and Stock Tokens on spot, which are free to trade at launch."],
-    ["Watch funding", "Holding positions through funding can quietly cost more than fees. Check the funding table above."],
-    ["One wallet, done right", "Splitting volume across many wallets usually gets flagged and filtered out. Farm with one real account."],
+    ["Trade real-world assets", "Stock Tokens and RWA perps (stocks, ETFs, gold, oil) are boosted in Season 1. Spot Stock Tokens are free to trade."],
+    ["Trade the off-hours", "RWA perps between 8PM and 4AM ET, and on weekends, earn more again. Off-hours funding is fixed, so costs are predictable."],
+    ["Keep your deposits on Arcus", "Retained deposits earn points. Don't deposit, trade and withdraw in a loop — Arcus cuts points for churning."],
+    ["Quality over raw volume", "Points weigh how you trade, not just how much. Wash trading, self-matching and clustering wallets get cut. Limit orders that add liquidity help."],
+    ["Use limit orders", <>Maker fees are 0% at most tiers. Plan it on the <Link href="/fees" className="font-medium text-accent hover:underline">Calculators page</Link>.</>],
+    ["Refer and collect invite codes", "Every $1M of perps volume (including volume you refer) earns an invite code, and referrals earn bonus points."],
+    ["Check in on Wednesdays", <>Points drop weekly at 3PM ET. Log them on the <Link href="/points" className="font-medium text-accent hover:underline">Points page</Link> to see your cost per point.</>],
   ];
   return (
-    <Card title="Farming playbook" subtitle="From the Arcus docs and how airdrops usually work.">
+    <Card title="Season 1 playbook" subtitle="From the official Arcus Points announcement and the Arcus docs.">
       <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {tips.map(([title, body], i) => (
           <li key={title} className="flex gap-3 rounded-[14px] bg-fill-2 p-3.5">

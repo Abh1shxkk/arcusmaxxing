@@ -251,7 +251,7 @@ export function PointsAnalyzer({
       </div>
 
       <p className="mt-6 text-[12px] leading-relaxed text-ink-3">
-        Estimates only. Arcus doesn&apos;t publish its points formula or what points will be worth, so this assumes your
+        Estimates only. Arcus scores how you trade — not just fees or volume — and hasn&apos;t said what points will be worth, so this assumes your
         future weeks earn points like your past ones did. Counts trading fees only, not funding or trading profit and loss.
       </p>
     </Card>

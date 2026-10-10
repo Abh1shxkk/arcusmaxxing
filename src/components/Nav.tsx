@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/", label: "Overview" },
   { href: "/points", label: "Points" },
   { href: "/farm", label: "Farm" },
+  { href: "/alpha", label: "Alpha" },
   { href: "/card", label: "Card" },
   { href: "/compare", label: "Compare" },
   { href: "/markets", label: "Markets" },
@@ -40,9 +41,9 @@ export function NavFrame({ pathname }: { pathname: string | null }) {
       <nav className="glass mx-auto flex h-14 max-w-[1180px] items-center justify-between rounded-full border border-hairline pr-2 pl-3 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
         <Link href="/" className="flex items-center gap-2.5">
           <Logo />
-          <span className="text-[16px] font-bold tracking-tight lg:hidden xl:inline">Arcus<span className="text-accent">Maxxing</span></span>
+          <span className="text-[16px] font-bold tracking-tight 2xl:inline xl:hidden">Arcus<span className="text-accent">Maxxing</span></span>
         </Link>
-        <div className="hidden items-center gap-0.5 lg:flex">{links}</div>
+        <div className="hidden items-center gap-0.5 xl:flex">{links}</div>
         <div className="flex items-center gap-1.5">
           <span className="hidden items-center gap-1.5 rounded-full bg-fill-2 px-3 py-1.5 text-[13px] font-medium text-ink-2 sm:flex">
             <span className="h-2 w-2 rounded-full bg-green" />
@@ -52,7 +53,7 @@ export function NavFrame({ pathname }: { pathname: string | null }) {
         </div>
       </nav>
       {/* Phones: the links get their own scrollable pill below the bar. */}
-      <div className="glass mx-auto mt-2 flex max-w-[1180px] gap-1 overflow-x-auto rounded-full border border-hairline p-1 lg:hidden">
+      <div className="glass mx-auto mt-2 flex max-w-[1180px] gap-1 overflow-x-auto rounded-full border border-hairline p-1 xl:hidden">
         {links}
       </div>
     </div>

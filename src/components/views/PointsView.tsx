@@ -4,6 +4,7 @@ import { AccountBar, AddressSearch, PageHeader } from "../Account";
 import { PointsAnalyzer } from "../PointsAnalyzer";
 import { PointsCard } from "../PointsCard";
 import { PointsSyncCard } from "../PointsSyncCard";
+import { SeasonCard } from "../SeasonCard";
 import { useTracker } from "../TrackerProvider";
 import { Card } from "../ui";
 
@@ -15,6 +16,8 @@ export function PointsView() {
         Log the points Arcus gives you each week. We match them to your fees, learn your points rate and predict
         whether the next weeks of trading will pay off.
       </PageHeader>
+
+      <SeasonCard weeklyPoints={Object.values(points)} />
 
       {address ? (
         <>
