@@ -8,6 +8,7 @@ import { bpsLabel, num, shortAddress, usd } from "@/lib/format";
 import { PageHeader } from "../Account";
 import { ADDRESS_RE, useTracker } from "../TrackerProvider";
 import { Card } from "../ui";
+import { DegenAvatar } from "../DegenAvatar";
 
 const MAX = 4;
 const SAMPLE = 1000; // recent fills per wallet: enough for style metrics without a long load
@@ -125,6 +126,7 @@ export function CompareView() {
                     return (
                       <th key={a} className="px-3 pb-3 text-right font-normal">
                         <div className="flex items-center justify-end gap-1.5">
+                          <DegenAvatar address={a} size={22} />
                           <span className="font-mono text-[13px] font-medium">{shortAddress(a)}</span>
                           <button onClick={() => setList(list.filter((x) => x !== a))} aria-label={`Remove ${shortAddress(a)}`}
                             className="grid h-5 w-5 place-items-center rounded-full text-ink-3 hover:bg-fill-2 hover:text-ink">×</button>

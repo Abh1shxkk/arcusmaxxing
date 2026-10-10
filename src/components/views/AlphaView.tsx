@@ -145,10 +145,17 @@ function AlphaCard({ item: i, voted, onVote }: { item: AlphaItem; voted: boolean
             // eslint-disable-next-line @next/next/no-img-element -- remote YouTube thumbnail, small and fixed-size
             <img src={i.thumbnail} alt="" loading="lazy" className="mb-3 aspect-video w-full max-w-[420px] rounded-[14px] object-cover ring-1 ring-hairline" />
           )}
-          <p className="text-[16px] font-semibold leading-snug group-hover:text-accent">
-            {i.kind === "x" ? i.author : i.title}
-            {i.kind === "x" && i.authorUrl && <span className="ml-1.5 text-[14px] font-normal text-ink-3">@{i.authorUrl.split("/").pop()}</span>}
-          </p>
+          {i.kind === "x" ? (
+            <div className="flex items-center gap-3">
+              <XAvatar handle={i.authorUrl?.split("/").pop() ?? ""} name={i.author} />
+              <p className="min-w-0 text-[16px] font-semibold leading-tight group-hover:text-accent">
+                {i.author}
+                {i.authorUrl && <span className="block text-[13px] font-normal text-ink-3">@{i.authorUrl.split("/").pop()}</span>}
+              </p>
+            </div>
+          ) : (
+            <p className="text-[16px] font-semibold leading-snug group-hover:text-accent">{i.title}</p>
+          )}
           {i.kind !== "x" && <p className="text-[13px] text-ink-2">{i.author}</p>}
           {i.text && <p className="mt-1.5 line-clamp-4 whitespace-pre-line text-[14px] leading-relaxed text-ink">{i.text}</p>}
         </a>
@@ -161,6 +168,23 @@ function AlphaCard({ item: i, voted, onVote }: { item: AlphaItem; voted: boolean
         </a>
       </div>
     </article>
+  );
+}
+
+/** The author's X profile picture (via unavatar.io), falling back to their initial. */
+function XAvatar({ handle, name }: { handle: string; name: string }) {
+  const [failed, setFailed] = useState(false);
+  if (!handle || failed) {
+    return (
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent text-[17px] font-bold text-on-accent" aria-hidden>
+        {name.slice(0, 1).toUpperCase()}
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- remote avatar from a third-party resolver
+    <img src={`https://unavatar.io/x/${encodeURIComponent(handle)}?fallback=false`} alt="" width={44} height={44} loading="lazy"
+      onError={() => setFailed(true)} className="h-11 w-11 shrink-0 rounded-full object-cover ring-1 ring-hairline" />
   );
 }
 

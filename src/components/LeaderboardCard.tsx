@@ -5,6 +5,7 @@ import { fetchLeaderboard, type LeaderboardEntry } from "@/lib/arcus";
 import { bps } from "@/lib/aggregate";
 import { bpsLabel, shortAddress, usd } from "@/lib/format";
 import { Card, Pagination, Segmented, usePagination } from "./ui";
+import { DegenAvatar } from "./DegenAvatar";
 
 const NO_ENTRIES: LeaderboardEntry[] = [];
 
@@ -75,7 +76,7 @@ export function LeaderboardCard({
                 className={`grid w-full ${cols} items-center gap-3 rounded-[12px] px-2 py-2 text-left transition hover:bg-fill-2`}
               >
                 <span className={`text-center text-[13px] font-semibold ${e.rank <= 3 ? "text-ink" : "text-ink-3"}`}>{e.rank}</span>
-                <span className="truncate font-mono text-[13px]">{shortAddress(e.address)}</span>
+                <span className="flex min-w-0 items-center gap-2"><DegenAvatar address={e.address} size={26} /><span className="truncate font-mono text-[13px]">{shortAddress(e.address)}</span></span>
                 <span className="w-20 text-right">{usd(e.volume, { compact: true })}</span>
                 <span className="w-24 text-right">
                   <span className="font-medium text-orange">{usd(e.feesPaid, { compact: true })}</span>

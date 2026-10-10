@@ -5,6 +5,7 @@ import { bps } from "@/lib/aggregate";
 import { bpsLabel, num, shortAddress, usd } from "@/lib/format";
 import { useTracker } from "./TrackerProvider";
 import { Card } from "./ui";
+import { DegenAvatar } from "./DegenAvatar";
 
 /** Each wallet's part of a combined view. Only shown when several wallets are combined. */
 export function WalletBreakdownCard() {
@@ -43,8 +44,8 @@ export function WalletBreakdownCard() {
               return (
                 <tr key={address} className="border-t border-hairline">
                   <td className="px-5 py-2.5 sm:px-6">
-                    <button onClick={() => open(address)} className="font-mono text-[13px] font-medium hover:text-accent">
-                      {shortAddress(address)}
+                    <button onClick={() => open(address)} className="flex items-center gap-2 font-mono text-[13px] font-medium hover:text-accent">
+                      <DegenAvatar address={address} size={26} />{shortAddress(address)}
                     </button>
                   </td>
                   <td className="w-[28%] pr-4">

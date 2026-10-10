@@ -4,6 +4,7 @@ import { useState } from "react";
 import { num, shortAddress, shortDate } from "@/lib/format";
 import { ADDRESS_RE, ALL, useTracker, type FillState } from "./TrackerProvider";
 import { Segmented, Select } from "./ui";
+import { DegenAvatar } from "./DegenAvatar";
 
 /** Wallet address form. `compact` is the single-row version used inside page cards. */
 export function AddressSearch({ compact }: { compact?: boolean }) {
@@ -197,13 +198,7 @@ function StackedAvatars({ addresses }: { addresses: string[] }) {
 }
 
 function Avatar({ address, size = 40 }: { address: string; size?: number }) {
-  const hue = parseInt(address.slice(2, 6), 16) % 360;
-  return (
-    <span className="grid shrink-0 place-items-center rounded-full font-mono font-semibold text-white"
-      style={{ background: `hsl(${hue} 55% 48%)`, width: size, height: size, fontSize: size * 0.33 }} aria-hidden>
-      {address.slice(2, 4).toUpperCase()}
-    </span>
-  );
+  return <DegenAvatar address={address} size={size} />;
 }
 
 export function PageHeader({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
