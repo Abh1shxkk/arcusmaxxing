@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { SEED_ITEMS, type AlphaItem } from "@/lib/alpha";
 import { PageHeader } from "@/components/Account";
 import { Card } from "@/components/ui";
+import { XAvatar, xHandle } from "@/components/XAvatar";
 
 const noop = () => () => {};
 const savedKey = () => {
@@ -113,10 +114,11 @@ function Row({ item: i, busy, children }: { item: AlphaItem; busy: boolean; chil
   return (
     <li className={`rounded-[14px] bg-fill-2 p-4 ${busy ? "opacity-50" : ""}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
+        {i.kind === "x" && <XAvatar handle={xHandle(i.authorUrl)} name={i.author} size={40} />}
         <div className="min-w-0 flex-1">
           <p className="text-[12px] text-ink-2">{i.kind.toUpperCase()} · {i.tag} · {i.votes ?? 0} votes{i.sharedBy ? ` · by ${i.sharedBy}` : ""}</p>
           <a href={i.url} target="_blank" rel="noopener noreferrer nofollow" className="mt-0.5 block truncate text-[15px] font-semibold hover:text-accent">
-            {i.kind === "x" ? `${i.author} on X` : i.title} ↗
+            {i.kind === "x" ? `${i.author} (@${xHandle(i.authorUrl)}) on X` : i.title} ↗
           </a>
           {i.text && <p className="mt-1 line-clamp-2 text-[13px] text-ink-2">{i.text}</p>}
           <p className="mt-1.5 text-[13px]"><span className="text-ink-3">Note: </span>{i.note}</p>

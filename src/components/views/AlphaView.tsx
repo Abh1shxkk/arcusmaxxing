@@ -5,6 +5,7 @@ import { ALPHA_TAGS, NOTE_MAX, type AlphaItem, type AlphaTag } from "@/lib/alpha
 import type { NewsItem, NewsSource } from "@/lib/news";
 import { PageHeader } from "../Account";
 import { Card, Pagination, Segmented, usePagination } from "../ui";
+import { XAvatar, xHandle } from "../XAvatar";
 
 type Tab = "community" | "news";
 
@@ -147,7 +148,7 @@ function AlphaCard({ item: i, voted, onVote }: { item: AlphaItem; voted: boolean
           )}
           {i.kind === "x" ? (
             <div className="flex items-center gap-3">
-              <XAvatar handle={i.authorUrl?.split("/").pop() ?? ""} name={i.author} />
+              <XAvatar handle={xHandle(i.authorUrl)} name={i.author} />
               <p className="min-w-0 text-[16px] font-semibold leading-tight group-hover:text-accent">
                 {i.author}
                 {i.authorUrl && <span className="block text-[13px] font-normal text-ink-3">@{i.authorUrl.split("/").pop()}</span>}
@@ -168,23 +169,6 @@ function AlphaCard({ item: i, voted, onVote }: { item: AlphaItem; voted: boolean
         </a>
       </div>
     </article>
-  );
-}
-
-/** The author's X profile picture (via unavatar.io), falling back to their initial. */
-function XAvatar({ handle, name }: { handle: string; name: string }) {
-  const [failed, setFailed] = useState(false);
-  if (!handle || failed) {
-    return (
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent text-[17px] font-bold text-on-accent" aria-hidden>
-        {name.slice(0, 1).toUpperCase()}
-      </span>
-    );
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- remote avatar from a third-party resolver
-    <img src={`https://unavatar.io/x/${encodeURIComponent(handle)}?fallback=false`} alt="" width={44} height={44} loading="lazy"
-      onError={() => setFailed(true)} className="h-11 w-11 shrink-0 rounded-full object-cover ring-1 ring-hairline" />
   );
 }
 
