@@ -1,0 +1,26 @@
+# Feeds the "Active traders" stats: every 10 minutes, ask the site to read new Arcus trades
+# (and backfill older ones) into the database. GitHub may delay scheduled runs a little; the
+# collector picks up from where it left off, so nothing is missed.
+name: Collect Arcus activity
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: collect-activity
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Run collector
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            https://arcusmaxxing.vercel.app/api/collect
